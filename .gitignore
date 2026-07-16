@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# Model Files
+*.pkl
+*.joblib
+*.h5
+*.keras
+*.model
+
+# Build Files
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Data Files (optional)
+data/raw/
+data/processed/
+
+# TensorBoard
+logs/
+
+# Temporary Files
+*.tmp
+*.temp
+
+# Cached Files
+.cache/
+
+# Compressed Files
+*.zip
+*.tar
+*.gz
+*.rar
+
+# Results
+results/*.csv
+results/*.xlsx

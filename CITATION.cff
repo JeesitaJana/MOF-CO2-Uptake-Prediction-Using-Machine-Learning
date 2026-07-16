@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+title: Predicting CO2 Uptake in Metal-Organic Frameworks Using Machine Learning
+authors:
+  - family-names: Jana
+    given-names: Jeesita
+version: 1.0.0
+date-released: 2026-07-13
+license: MIT
