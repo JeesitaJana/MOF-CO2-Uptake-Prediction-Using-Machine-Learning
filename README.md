@@ -2,60 +2,67 @@
 
 ## Overview
 
-Metal–Organic Frameworks (MOFs) are among the most promising materials for carbon capture due to their high porosity, tunable chemistry, and large surface areas. However, evaluating thousands of MOFs through experiments or molecular simulations is computationally expensive.
+Metal–Organic Frameworks (MOFs) are among the most promising materials for carbon capture because of their exceptionally high porosity, tunable chemistry, and large surface areas. However, experimentally evaluating or simulating thousands of MOF structures is computationally expensive and time-consuming.
 
-This project develops machine learning models capable of predicting CO₂ adsorption capacity directly from structural and chemical descriptors, significantly accelerating material screening.
+This project develops machine learning models to predict **CO₂ adsorption capacity** directly from structural and chemical descriptors, enabling rapid screening of promising MOF candidates.
 
-The work reproduces a descriptor-based adsorption prediction workflow inspired by recent MOF machine learning studies and compares Deep Neural Networks (DNN) with XGBoost models.
+The project is a **descriptor-based partial reproduction study** inspired by recent MOF machine learning research. It compares a **Deep Neural Network (DNN)** and an **XGBoost Regressor** using geometric descriptors and Revised Autocorrelation (RAC) descriptors extracted from publicly available MOF datasets.
 
 ---
 
-## Objectives
+# Objectives
 
 - Predict CO₂ uptake of MOFs at **298 K** and **1 bar**
-- Combine **geometric** and **RAC descriptors**
-- Build regression models using:
+- Integrate geometric descriptors and RAC descriptors
+- Develop regression models using:
   - Deep Neural Network (DNN)
   - XGBoost Regressor
-- Identify key features influencing adsorption performance
-- Compare descriptor-based machine learning approaches with graph-based methods reported in literature
+- Identify important features affecting CO₂ adsorption
+- Compare descriptor-based machine learning with graph-based approaches reported in literature
 
 ---
 
-## Dataset
+# Dataset
 
-Three independent datasets were integrated:
+The final dataset was created by integrating three independent datasets.
 
-### 1. Geometric Features
+## 1. Geometric Features
 
-Includes:
+Includes structural properties such as:
 
 - Accessible Surface Area (ASA)
 - Pore Volume
 - Largest Cavity Diameter (LCD)
 - Pore Limiting Diameter (PLD)
+- Density
+- Void Fraction
 
-### 2. RAC Descriptors
+---
 
-Includes:
+## 2. RAC Descriptors
+
+Chemical descriptors including:
 
 - Atomic environment descriptors
 - Connectivity information
 - Electronic structure descriptors
-
-### 3. CO₂ Isotherm Data
-
-Adsorption values extracted at:
-
-- Temperature = **298 K**
-- Pressure = **100000 Pa (1 bar)**
+- Chemical environment descriptors
 
 ---
 
-## Final Dataset Statistics
+## 3. CO₂ Isotherm Data
+
+Adsorption values extracted at:
+
+- Temperature: **298 K**
+- Pressure: **100000 Pa (1 bar)**
+
+---
+
+# Final Dataset Statistics
 
 | Parameter | Value |
-|------------|--------|
+|-----------|------:|
 | Initial Geometric MOFs | 726 |
 | RAC Feature MOFs | 10,142 |
 | Common MOFs | 451 |
@@ -64,7 +71,7 @@ Adsorption values extracted at:
 
 ---
 
-## Machine Learning Pipeline
+# Machine Learning Pipeline
 
 ```text
 Raw Data
@@ -86,20 +93,22 @@ Train / Validation / Test Split
     │
     ▼
 Model Training
- ┌───────────┬───────────┐
- ▼           ▼
-DNN       XGBoost
- │           │
- └─────┬─────┘
-       ▼
+ ┌───────────────┬───────────────┐
+ │               │
+ ▼               ▼
+Deep Neural   XGBoost
+ Network      Regressor
+ │               │
+ └───────┬───────┘
+         ▼
 Performance Evaluation
 ```
 
 ---
 
-## Deep Neural Network (DNN)
+# Deep Neural Network (DNN)
 
-### Architecture
+## Architecture
 
 ```text
 Input Layer
@@ -117,115 +126,135 @@ Dense(700, ReLU)
 Output Layer
 ```
 
-### Hyperparameters
+## Hyperparameters
 
 | Parameter | Value |
-|------------|--------|
+|-----------|-------|
 | Optimizer | Adam |
 | Learning Rate | 0.00075 |
-| Dropout Rate | 0.2 |
 | Hidden Layers | 3 |
+| Dropout Rate | 0.2 |
+| Loss Function | Mean Squared Error |
+
+---
+
+# XGBoost Regressor
+
+## Configuration
+
+| Parameter | Value |
+|-----------|------:|
+| n_estimators | 1000 |
+| learning_rate | 0.03 |
+| max_depth | 6 |
+| subsample | 0.8 |
+| colsample_bytree | 0.8 |
+
+XGBoost was selected because it performs particularly well on medium-sized tabular datasets while also providing feature importance analysis.
+
+---
+
+# Results
+
+## Deep Neural Network
+
+| Metric | Value |
+|--------|------:|
+| R² Score | 0.5665 |
+| MAE | 0.7230 |
+| RMSE | 1.1895 |
 
 ---
 
 ## XGBoost Regressor
 
-### Configuration
-
-```python
-n_estimators = 1000
-learning_rate = 0.03
-max_depth = 6
-subsample = 0.8
-colsample_bytree = 0.8
-```
-
----
-
-## Results
-
-### Deep Neural Network
-
 | Metric | Value |
-|----------|---------|
-| R² Score | 0.5665 |
-| MAE | 0.723 |
-| RMSE | 1.190 |
-
-### XGBoost
-
-| Metric | Value |
-|----------|---------|
+|--------|------:|
 | R² Score | 0.8491 |
 | MAE | 0.5136 |
 | RMSE | 0.7018 |
 
 ---
 
-## Best Performing Model
+# Best Performing Model
 
 🏆 **XGBoost Regressor**
 
-The XGBoost model significantly outperformed the Deep Neural Network, achieving higher predictive accuracy and lower prediction error across all evaluation metrics.
+XGBoost significantly outperformed the Deep Neural Network, achieving higher predictive accuracy and lower prediction error across all evaluation metrics.
 
 ---
 
-## Important Features
+# Important Features
 
-Feature importance analysis identified the following descriptors as major contributors to CO₂ adsorption prediction:
+Feature importance analysis identified the following descriptors as the strongest predictors of CO₂ adsorption:
 
-- `lc-I-1-all`
-- `D_mc-Z-3-all`
-- `mc-S-0-all`
-- `mc-chi-3-all`
+- lc-I-1-all
+- D_mc-Z-3-all
+- mc-S-0-all
+- mc-chi-3-all
 - Accessible Surface Area (ASA)
 
-These findings suggest that both:
+These findings indicate that both:
 
-- **Chemical environment**
-- **Pore structure characteristics**
+- Chemical environment
+- Pore structure characteristics
 
-play critical roles in determining adsorption performance.
+are critical factors governing CO₂ adsorption performance.
 
 ---
 
-## Key Findings
+# Key Findings
 
 - XGBoost significantly outperformed deep learning on the available dataset.
-- Descriptor-based machine learning models can effectively predict CO₂ adsorption.
-- Chemical descriptors contributed more strongly than purely geometric features.
-- Dataset size remains the primary limitation for deep learning performance.
-- Machine learning provides a rapid alternative to expensive simulations and experiments for preliminary MOF screening.
+- Descriptor-based machine learning can accurately predict CO₂ adsorption in MOFs.
+- Chemical descriptors contributed more strongly than purely geometric descriptors.
+- Dataset size remains the major limitation for deep learning performance.
+- Machine learning provides a rapid alternative to expensive molecular simulations for preliminary MOF screening.
 
 ---
 
-## Limitations
+# Limitations
 
-- Only **449 MOFs** available after preprocessing.
-- No graph-level crystal structure information included.
-- Full MOF-CGCNN architecture was not reproduced.
-- Limited hyperparameter optimization.
-- Single gas adsorption condition considered.
+- Only **449 MOFs** remained after preprocessing.
+- No graph-level crystal structure information was incorporated.
+- The complete MOF-CGCNN architecture from the reference paper was not reproduced.
+- AP-RDF and CMD descriptors used in the original study were unavailable.
+- Hyperparameter optimization was limited.
+- Only a single adsorption condition (298 K, 1 bar) was considered.
 
 ---
 
-## Future Work
+# Relationship to the Reference Paper
 
-- Implement **MOF-CGCNN**
-- Explore **Graph Neural Networks (GNNs)**
-- Use larger hypothetical MOF databases
+This repository is a **descriptor-based partial reproduction** of a recent MOF adsorption prediction study.
+
+Compared with the original publication, this work differs in:
+
+- Dataset size
+- Descriptor family
+- Machine learning models
+
+Therefore, this project should be interpreted as a descriptor-based replication study rather than a complete reproduction of the published MOF-CGCNN framework.
+
+---
+
+# Future Work
+
+- Implement MOF-CGCNN
+- Explore Graph Neural Networks (GNNs)
+- Incorporate larger hypothetical MOF databases
 - Predict multiple gas adsorption properties
-- Add uncertainty quantification methods
+- Apply uncertainty quantification techniques
 - Perform automated hyperparameter optimization
 
 ---
 
-## Technologies Used
+# Technologies Used
 
 - Python
 - Pandas
 - NumPy
-- Scikit-Learn
+- Scikit-learn
 - TensorFlow / Keras
 - XGBoost
 - Matplotlib
@@ -233,9 +262,11 @@ play critical roles in determining adsorption performance.
 
 ---
 
-## Project Structure
+# Project Structure
 
 ```text
+MOF-CO2-Uptake-Prediction-Using-Machine-Learning/
+│
 ├── data/
 │   ├── geometric_features.csv
 │   ├── rac_features.csv
@@ -260,24 +291,36 @@ play critical roles in determining adsorption performance.
 
 ---
 
-## Installation
+# Installation
 
-Clone the repository:
+## Clone the repository
 
 ```bash
-git clone https://github.com/your-username/mof-co2-prediction.git
-cd mof-co2-prediction
+git clone https://github.com/JeesitaJana/MOF-CO2-Uptake-Prediction-Using-Machine-Learning.git
+cd MOF-CO2-Uptake-Prediction-Using-Machine-Learning
 ```
 
-Create a virtual environment:
+## Create a virtual environment
 
 ```bash
 python -m venv venv
-source venv/bin/activate      # Linux/Mac
-venv\Scripts\activate         # Windows
 ```
 
-Install dependencies:
+## Activate the environment
+
+### Linux / macOS
+
+```bash
+source venv/bin/activate
+```
+
+### Windows
+
+```bash
+venv\Scripts\activate
+```
+
+## Install dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -285,9 +328,9 @@ pip install -r requirements.txt
 
 ---
 
-## Usage
+# Usage
 
-Run the training notebook:
+Launch Jupyter Notebook:
 
 ```bash
 jupyter notebook
@@ -299,53 +342,23 @@ Open:
 notebooks/MOF_CO2_Prediction.ipynb
 ```
 
-Train and evaluate both models to reproduce the results.
+Run all notebook cells to train and evaluate both machine learning models.
 
 ---
 
-## Citation
+# Citation
 
-If you use this project in your research or academic work, please cite the corresponding repository and the original MOF machine learning studies that inspired this workflow.
+If you use this repository in your research or academic work, please cite:
+
+- This repository
+- The original MOF machine learning studies that inspired this workflow
 
 ---
 
-## Author
+# Author
 
 **Jeesita Jana**  
 B.Tech – Artificial Intelligence & Data Science (Medical Engineering)  
 Amrita Vishwa Vidyapeetham
 
 ---
-
-## License
-
-This project is licensed under the MIT License.
-
-```
-MIT License
-
-Copyright (c) 2026 Jeesita Jana
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files, to deal in the Software
-without restriction, including without limitation the rights to use, copy,
-modify, merge, publish, distribute, sublicense, and/or sell copies of the
-Software.
-```
-
----
-
-## .gitignore
-
-```gitignore
-__pycache__/
-.ipynb_checkpoints/
-*.pkl
-*.h5
-*.keras
-*.log
-*.zip
-*.tar
-*.xz
-.DS_Store
-```
